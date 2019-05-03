@@ -33,6 +33,11 @@ soup_page = soup(page_html,'html.parser')
 results_count = int(soup_page.find("span", {"class":"total-results"}).text.strip())
 loop_count = round(results_count/81)
 
+headers="Data ID, Name, Venue Type, Option, Rating, Latitude, Longitude, Website\n\n"
+data = list()
+data.append(headers)
+
+
 for count in range(1, loop_count+1):
 
 	if (count != 1):
@@ -42,14 +47,7 @@ for count in range(1, loop_count+1):
 		page_html=driver.page_source
 		soup_page = soup(page_html,'html.parser')
 
-	filename="restaurants.csv"
-	f=open(filename,"w", encoding="utf-8")
-
-	headers="Data ID, Name, Venue Type, Option, Rating, Latitude, Longitude, Website\n\n"
-
-	f.write(headers)
-	f.close()
-
+	
 	container = soup_page.findAll("div", {"class":"js-venues venues__item"})
 
 	for	contain	in	container:
@@ -97,11 +95,11 @@ for count in range(1, loop_count+1):
 		elif(dat_cat ==	'14'):
 			ven_typ	= "Professional"
 		elif(dat_cat ==	'13'):
-			ven_typ	= "JuiceBar"
+			ven_typ	= "Juice Bar"
 		elif(dat_cat ==	'6'):
 			ven_typ	= "Catering"
 		elif(dat_cat ==	'10'):
-			ven_typ	= "FoodTruck"
+			ven_typ	= "Food Truck"
 		elif(dat_cat ==	'3'):
 			ven_typ	= "Bakery"
 		elif(dat_cat ==	'5'):
@@ -109,14 +107,13 @@ for count in range(1, loop_count+1):
 		elif(dat_cat ==	'99'):
 			ven_typ	= "Other"
 		elif(dat_cat ==	'8'):
-			ven_typ	= "Farmer'smarket"
+			ven_typ	= "Farmer's market"
 		elif(dat_cat ==	'4'):
 			ven_typ	= "B&B"
 		else:
 			ven_typ	= "MarketVendor"
 
-		f=open(filename,"a+", encoding="utf-8")
-		f.write(data_id+","
+		data.append(data_id+","
 			+name_+","
 			#+city_+","
 			#+country_+","
@@ -129,6 +126,7 @@ for count in range(1, loop_count+1):
 			+lon_+","
 			+res_url+
 			"\n")
-		
-f.close()
+filename="restaurants.csv"
+with open(filename,"w", encoding="utf-8") as f:
+	f.writelines(data)
 driver.quit()
