@@ -5,7 +5,7 @@ import re
 
 
 
-#setting load preferences - disabling flash, image and CSS loading
+# setting load preferences - disabling flash, image and CSS loading
 
 ffp = webdriver.FirefoxProfile()
 ffp.set_preference('permissions.default.stylesheet', 2)
