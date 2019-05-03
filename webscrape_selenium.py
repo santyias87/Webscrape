@@ -19,8 +19,6 @@ driver=webdriver.Firefox(firefox_profile = ffp)
 
 my_url="https://www.happycow.net/searchmap?location=&radius=25&metric=mi&limit=81&order=default&lat=52.5062&lng=13.3296"
 driver.get(my_url)
-#import time
-#time.sleep(20)
 
 page_html=driver.page_source
 
@@ -33,7 +31,7 @@ soup_page = soup(page_html,'html.parser')
 results_count = int(soup_page.find("span", {"class":"total-results"}).text.strip())
 loop_count = round(results_count/81)
 
-headers="Data ID, Name, Venue Type, Option, Rating, Latitude, Longitude, Website\n\n"
+headers="Data ID, Name, Venue Type, Option, Rating, Reviews, Price, Latitude, Longitude, Website \n"
 data = list()
 data.append(headers)
 
@@ -44,6 +42,8 @@ for count in range(1, loop_count+1):
 
 		my_url="https://www.happycow.net/searchmap?location=&radius=100&metric=mi&limit=81&order=default&lat=52.5062&lng=13.3296&page="+str(count)
 		driver.get(my_url)
+		import time
+		time.sleep(5)
 		page_html=driver.page_source
 		soup_page = soup(page_html,'html.parser')
 
@@ -70,6 +70,7 @@ for count in range(1, loop_count+1):
 		#	loc_=street_
 
 		detinf	=	contain.div.div.a.div.div.find_next_sibling("div").div
+		moreinf =   detinf.div.find_next_sibling("div").div
 		lat_	=	detinf["data-lat"]
 		lon_	=	detinf["data-lng"]
 		rating_	=	detinf["data-rating"]
@@ -79,6 +80,10 @@ for count in range(1, loop_count+1):
 		dat_vgn	=	detinf["data-vegan"]
 		dat_veg	=	detinf["data-vegonly"]
 		dat_ent	=	detinf["data-entrytype"]
+		num_rev =   moreinf.span.text.replace("(","").replace(")","")
+		price   =   len(moreinf.ul.li.find_next_sibling("li").findAll("i",{"class":"fa fa-dollar  price--fill "}))
+
+
 		if (dat_vgn == '1' and dat_veg == '1'):
 			ven_opt = "Vegan"
 		elif(dat_vgn == '0' and dat_veg == '1'):
@@ -113,15 +118,20 @@ for count in range(1, loop_count+1):
 		else:
 			ven_typ	= "MarketVendor"
 
+		if (price == 1):
+			price_ = "Cheap"
+		elif (price == 2):
+			price_ = "Average"
+		else:
+			price_ = "Expensive"
+
 		data.append(data_id+","
 			+name_+","
-			#+city_+","
-			#+country_+","
-			#+loc_+","
-			#+loc_cod+","
 			+ven_typ+","
 			+ven_opt+","
 			+rating_+","
+			+num_rev+","
+			+price_+","
 			+lat_+","
 			+lon_+","
 			+res_url+
