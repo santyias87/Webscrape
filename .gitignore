@@ -1,2 +1,3 @@
-restaurants.csv
+*.csv
 geckodriver.log
+.vscode
