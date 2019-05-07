@@ -3,9 +3,12 @@ from selenium.webdriver.common.keys import Keys
 from requests import get
 from requests.exceptions import RequestException
 from bs4 import BeautifulSoup as soup
+import pandas as pd
 import re
 import math
-import pandas as pd
+import datetime
+import time
+
 
 #reading restaurant id and happycow page
 
@@ -35,42 +38,48 @@ switch_count = 0
 
 # setting load preferences - setting user agent id, proxy type, proxy ip and port number 
  
-ffp.set_preference("network.proxy.type", 1)
-ffp.set_preference("network.proxy.http", prox_ip[0])
-ffp.set_preference("network.proxy.http_port", prox_ip[0])
-ffp.set_preference("general.useragent.override", ua_id[0])
-driver = webdriver.Firefox(firefox_profile = ffp)
+#ffp.set_preference("network.proxy.type", 1)
+#ffp.set_preference("network.proxy.http", prox_ip[0])
+#ffp.set_preference("network.proxy.http_port", prox_ip[0])
+#ffp.set_preference("general.useragent.override", ua_id[0])
+#driver = webdriver.Firefox(firefox_profile = ffp)
 
 prox_count = 0
 ua_count = 0
 
 for i in range(len(rest_id)):
 	
-	if (i%20 == 0):
+	print (str(datetime.datetime.now()))
+	
+	#if (i%2 == 0):
 
-		prox_count	= prox_count+1
-		ua_count	= ua_count+1
-		driver.close()
+	prox_count	= prox_count+1
+	ua_count	= ua_count+1
+	#driver.close()
+	
+	print ("------------------")
+	print ("This is listing: ", str(i+1))
+	print ("------------------")
+	print ("switching IP to")
+	print (prox_ip[prox_count%len(prox_ip)])
+	print ("switching Useragent to")
+	print (ua_id[ua_count%len(ua_id)])
 		
-		print ("switching IP to")
-		print (prox_ip[prox_count%len(prox_ip)])
-		print ("switching Useragent to")
-		print (ua_id[ua_count%len(ua_id)])
-		
-		ffp = webdriver.FirefoxProfile()
-		ffp.set_preference("network.proxy.type", 1)
-		ffp.set_preference("network.proxy.http", prox_ip[prox_count%len(prox_ip)])
-		ffp.set_preference("network.proxy.http_port", prox_ip[prox_count%len(prox_ip)])
-		ffp.set_preference("general.useragent.override", ua_id[ua_count%len(ua_id)])
-		driver = webdriver.Firefox(firefox_profile = ffp)
+	ffp = webdriver.FirefoxProfile()
+	ffp.set_preference("network.proxy.type", 1)
+	ffp.set_preference("network.proxy.http", prox_ip[prox_count%len(prox_ip)])
+	ffp.set_preference("network.proxy.http_port", prox_ip[prox_count%len(prox_ip)])
+	ffp.set_preference("general.useragent.override", ua_id[ua_count%len(ua_id)])
+	driver = webdriver.Firefox(firefox_profile = ffp)
 		
 	my_url 	= str(rest_url[i])
 	driver.get(my_url)
-	
 	page_html  	= driver.page_source
 	soup_page  	= soup(page_html,'html.parser')
+	time.sleep(5)
+	driver.close()
+
 	data_id 	= str(rest_id[i])
-	
 	addrcontain	= soup_page.findAll(itemprop = "streetAddress")
 	if (addrcontain != []):
 		addr_full	= addrcontain[0].text.strip()
