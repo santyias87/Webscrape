@@ -41,18 +41,21 @@ ffp.set_preference("network.proxy.http_port", prox_ip[0])
 ffp.set_preference("general.useragent.override", ua_id[0])
 driver = webdriver.Firefox(firefox_profile = ffp)
 
+prox_count = 0
+ua_count = 0
+
 for i in range(len(rest_id)):
 	
-	if (switch_count > 20):
+	if (i%20 == 0):
 
-		prox_count = 1
-		ua_count = 1
+		prox_count	= prox_count+1
+		ua_count	= ua_count+1
 		driver.close()
 		
 		print ("switching IP to")
-		print (prox_ip[i%prox_count])
+		print (prox_ip[prox_count%len(prox_ip)])
 		print ("switching Useragent to")
-		print (ua_id[(i%ua_count)+1])
+		print (ua_id[ua_count%len(ua_id)])
 		
 		ffp = webdriver.FirefoxProfile()
 		ffp.set_preference("network.proxy.type", 1)
@@ -60,11 +63,7 @@ for i in range(len(rest_id)):
 		ffp.set_preference("network.proxy.http_port", prox_ip[prox_count%len(prox_ip)])
 		ffp.set_preference("general.useragent.override", ua_id[ua_count%len(ua_id)])
 		driver = webdriver.Firefox(firefox_profile = ffp)
-		prox_count	= prox_count+1
-		ua_count	= ua_count+1
-		switch_count = 0
-
-	switch_count = switch_count + 1
+		
 	my_url 	= str(rest_url[i])
 	driver.get(my_url)
 	
